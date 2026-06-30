@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PEC | Panel de Control de la Comunidad</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+    <style>
+        .dashboard-layout { padding: 3rem 0; background-color: var(--azul-fondo); min-height: 90vh; font-family: 'Montserrat', sans-serif; }
+        .encabezado-panel { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 1.5rem; }
+        .caja-modulo { background: var(--blanco); border-radius: 16px; padding: 2rem; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 2.5rem; }
+        .titulo-modulo { color: var(--azul-primario); font-weight: 800; font-size: 1.4rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        
+        .tabla-pec { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
+        .tabla-pec th { background-color: #0f172a; color: white; text-align: left; padding: 0.85rem; font-weight: 700; text-transform: uppercase; font-size: 0.75rem; }
+        .tabla-pec td { padding: 0.85rem; border-bottom: 1px solid #e2e8f0; color: var(--texto); }
+        
+        .grid-formulario { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .campo-panel { display: flex; flex-direction: column; gap: 0.3rem; }
+        .campo-panel label { font-size: 0.8rem; font-weight: 700; color: #475569; text-transform: uppercase; }
+        .campo-panel input, .campo-panel select { padding: 0.65rem; border-radius: 6px; border: 1px solid #cbd5e1; font-family: inherit; }
+        
+        .btn-crear { background-color: var(--azul-primario); color: white; border: none; padding: 0.7rem 1.5rem; border-radius: 6px; font-weight: 700; cursor: pointer; }
+        .btn-crear:hover { background-color: var(--azul-vibrante); }
+        .btn-acc-edit { color: #2563eb; text-decoration: none; font-weight: 600; margin-right: 0.8rem; }
+        .btn-acc-del { color: #dc2626; text-decoration: none; font-weight: 600; }
+        
+        .badge-rol { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .badge-admin { background-color: #fef3c7; color: #d97706; }
+        .badge-docente { background-color: #e0f2fe; color: #0369a1; }
+        .badge-alumno { background-color: #dcfce7; color: #15803d; }
+
+        /* ESTILOS DE ESTATUS VISUALES */
+        .estatus-badge { display: inline-block; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; }
+        .estatus-no-empezado { background-color: #fee2e2; color: #991b1b; }
+        .estatus-en-proceso { background-color: #fef3c7; color: #92400e; }
+        .estatus-terminado { background-color: #dcfce7; color: #166534; }
+    </style>
+</head>
+<body>
+
+    <nav class="menu">
+        <div class="logo">Proyecto<span>PEC</span></div>
+        <ul>
+            <li><span class="badge-rol {% if session['rol']=='admin' %}badge-admin{% elif session['rol']=='docente' %}badge-docente{% else %}badge-alumno{% endif %}">Perfil: {{ session['rol'] }}</span></li>
+            <li><a href="/logout" class="boton-nav">Cerrar Sesión ({{ session['usuario'] }})</a></li>
+        </ul>
+    </nav>
+
+    <main class="dashboard-layout">
+        <div class="contenedor">
+            
+            {% if get_flashed_messages() %}
+                {% for message in get_flashed_messages() %}
+                    <div style="padding: 1rem; margin-bottom: 1.5rem; border-radius: 8px; font-weight: 600; background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="encabezado-panel">
+                <div>
+                    <h1 style="font-weight: 800; font-size: 2.2rem; color: #0f172a;">Sistema de Control PEC</h1>
+                    <p style="color: var(--texto-light);">Acceso autorizado para consulta y administración de evidencias y actividades escolares.</p>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 2rem; padding: 1.5rem; background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <form action="/dashboard" method="POST" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <label style="font-weight: 700; font-size: 0.8rem; color:#475569; display:block; margin-bottom: .5rem;">INGRESAR ID DEL REGISTRO:</label>
+                        <input type="number" name="buscar_id" placeholder="Ej. 1" value="{{ busqueda_id if busqueda_id else '' }}" required style="width:100%; padding: 0.7rem; border-radius: 8px; border: 1px solid #cbd5e1;">
+                    </div>
+                    <div style="width: 280px;">
+                        <label style="font-weight: 700; font-size: 0.8rem; color:#475569; display:block; margin-bottom: .5rem;">MÓDULO:</label>
+                        <select name="modulo_busqueda" required style="width:100%; padding: 0.7rem; border-radius: 8px; border: 1px solid #cbd5e1; background:#fff;">
+                            <option value="evidencia" {% if modulo_busqueda == 'evidencia' %}selected{% endif %}>📁 Evidencias</option>
+                            <option value="actividad" {% if modulo_busqueda == 'actividad' %}selected{% endif %}>📅 Actividades</option>
+                            {% if session['rol'] == 'admin' %}
+                            <option value="responsable" {% if modulo_busqueda == 'responsable' %}selected{% endif %}>👥 Docentes / Responsables</option>
+                            {% endif %}
+                            {% if session['rol'] in ['admin', 'docente'] %}
+                            <option value="sede" {% if modulo_busqueda == 'sede' %}selected{% endif %}>📍 Sedes</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                    <div style="display: flex; align-items: flex-end;">
+                        <button type="submit" class="btn-crear" style="padding: 0.75rem 2rem; border-radius: 8px;">Buscar</button>
+                    </div>
+                </form>
+            </div>
+
+            {% if modo_busqueda %}
+            <div style="background: #eff6ff; border: 2px dashed #3b82f6; padding: 1.5rem; border-radius: 12px; margin-bottom: 2.5rem;">
+                <h3 style="color:#1e40af; font-weight:800; margin-bottom:0.8rem;">🔍 Resultado de Consulta rápida:</h3>
+                {% if resultado_busqueda %}
+                    <div style="background:#fff; padding:1.2rem; border-radius:8px; border:1px solid #bfdbfe;">
+                        <ul style="list-style:none; display:flex; flex-direction:column; gap:0.4rem; padding:0; margin:0;">
+                            {% for campo in resultado_busqueda.keys() %}
+                                <li><strong style="color:#0f172a;">{{ campo | replace('_', ' ') | upper }}:</strong> <span style="color:#334155;">{{ resultado_busqueda[campo] }}</span></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% else %}
+                    <p style="color: #b91c1c; font-weight: 700; margin:0;">No se encontró ningún registro con ese ID en este módulo.</p>
+                {% endif %}
+                <div style="margin-top:1rem;"><a href="/dashboard" style="font-size: 0.85rem; color: #1e40af; font-weight: 700;">Limpiar Filtro</a></div>
+            </div>
+            {% endif %}
+
+            <div style="display: flex; gap: 0.8rem; margin-bottom: 2.5rem; flex-wrap: wrap;">
+                {% if session['rol'] == 'admin' %}
+                    <button class="btn-tab-modulo" data-target="panel-docentes" style="padding: 0.8rem 1.4rem; font-family:inherit; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">👥 Docentes</button>
+                    <button class="btn-tab-modulo" data-target="panel-sedes" style="padding: 0.8rem 1.4rem; font-family:inherit; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">📍 Sedes</button>
+                    <button class="btn-tab-modulo" data-target="panel-actividades" style="padding: 0.8rem 1.4rem; font-family:inherit; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">📅 Actividades</button>
+                    <button class="btn-tab-modulo" data-target="panel-evidencias" style="padding: 0.8rem 1.4rem; font-family:inherit; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">📁 Evidencias</button>
+                {% endif %}
+
+                {% if session['rol'] == 'docente' %}
+                    <button class="btn-tab-modulo" data-target="panel-sedes" style="padding: 0.8rem 1.4rem; font-family:inherit; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">📍 Sedes</button>
+                    <button class="btn-tab-modulo" data-target="panel-actividades" style="padding: 0.8rem 1.4rem; font-family:inherit; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">📅 Actividades</button>
+                    <button class="btn-tab-modulo" data-target="panel-evidencias" style="padding: 0.8rem 1.4rem; font-family:inherit; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">📁 Ver Evidencias</button>
+                {% endif %}
+
+                {% if session['rol'] == 'alumno' %}
+                    <button class="btn-tab-modulo" data-target="panel-actividades" style="padding: 0.8rem 1.4rem; font-family:inherit; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">📅 Ver Actividades</button>
+                    <button class="btn-tab-modulo" data-target="panel-evidencias" style="padding: 0.8rem 1.4rem; font-family:inherit; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">📁 Mis Evidencias</button>
+                {% endif %}
+            </div>
+
+            {% if session['rol'] == 'admin' %}
+            <div id="panel-docentes" class="seccion-tab-contenido" style="display:none;">
+                <div class="caja-modulo">
+                    <h2 class="titulo-modulo">Agregar Nuevo Docente / Responsable</h2>
+                    <form action="/responsables/crear" method="POST" class="grid-formulario">
+                        <div class="campo-panel"><label>Nombre Completo</label><input type="text" name="nombre_completo" required></div>
+                        <div class="campo-panel"><label>Título Profesional</label><input type="text" name="titulo_profesional"></div>
+                        <div class="campo-panel"><label>Cargo Asignado</label><input type="text" name="cargo" required></div>
+                        <button type="submit" class="btn-crear" style="align-self:flex-end; height:fit-content;">Guardar Docente</button>
+                    </form>
+                    
+                    <h3 style="font-weight: 700; margin-top:2rem;">Lista de Personal Registrado</h3>
+                    <table class="tabla-pec">
+                        <thead><tr><th>ID</th><th>Nombre</th><th>Título</th><th>Cargo</th><th>Acciones</th></tr></thead>
+                        <tbody>
+                            {% for r in responsables %}
+                            <tr>
+                                <td><strong>{{ r.id_responsable }}</strong></td>
+                                <td>{{ r.nombre_completo }}</td>
+                                <td>{{ r.titulo_profesional if r.titulo_profesional else 'N/A' }}</td>
+                                <td>{{ r.cargo }}</td>
+                                <td>
+                                    <a href="/responsables/editar/{{ r.id_responsable }}" class="btn-acc-edit">Editar</a>
+                                    <a href="/responsables/eliminar/{{ r.id_responsable }}" class="btn-acc-del" onclick="return confirm('¿Remover docente?')">Eliminar</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if session['rol'] in ['admin', 'docente'] %}
+            <div id="panel-sedes" class="seccion-tab-contenido" style="display:none;">
+                <div class="caja-modulo">
+                    <h2 class="titulo-modulo">Agregar Nueva Sede</h2>
+                    <form action="/sedes/crear" method="POST" class="grid-formulario">
+                        <div class="campo-panel"><label>Nombre del Lugar</label><input type="text" name="nombre_sede" required></div>
+                        <div class="campo-panel"><label>Ubicación / Referencia</label><input type="text" name="ubicacion" required></div>
+                        <button type="submit" class="btn-crear" style="align-self:flex-end; height:fit-content;">Registrar Sede</button>
+                    </form>
+                    
+                    <h3 style="font-weight: 700; margin-top:2rem;">Sedes de Operación</h3>
+                    <table class="tabla-pec">
+                        <thead><tr><th>ID</th><th>Nombre de Sede</th><th>Ubicación</th><th>Acciones</th></tr></thead>
+                        <tbody>
+                            {% for s in sedes %}
+                            <tr>
+                                <td><strong>{{ s.id_sede }}</strong></td>
+                                <td>{{ s.nombre_sede }}</td>
+                                <td>{{ s.ubicacion }}</td>
+                                <td>
+                                    <a href="/sedes/editar/{{ s.id_sede }}" class="btn-acc-edit">Editar</a>
+                                    <a href="/sedes/eliminar/{{ s.id_sede }}" class="btn-acc-del" onclick="return confirm('¿Remover sede?')">Eliminar</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+
+            <div id="panel-actividades" class="seccion-tab-contenido" style="display:none;">
+                <div class="caja-modulo">
+                    {% if session['rol'] in ['admin', 'docente'] %}
+                    <h2 class="titulo-modulo">Programar Actividad Escolar</h2>
+                    <form action="/actividades/crear" method="POST" class="grid-formulario">
+                        <div class="campo-panel"><label>Nombre de la Actividad</label><input type="text" name="nombre_actividad" required></div>
+                        <div class="campo-panel"><label>Descripción</label><input type="text" name="descripcion"></div>
+                        <div class="campo-panel"><label>Fecha Programada</label><input type="text" name="fecha_programada" required></div>
+                        <div class="campo-panel"><label>Parcial Evaluable</label><input type="text" name="parcial" required></div>
+                        <div class="campo-panel">
+                            <label>Coordinador</label>
+                            <select name="id_responsable">
+                                {% for r in responsables %}
+                                <option value="{{ r.id_responsable }}">{{ r.nombre_completo }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="campo-panel">
+                            <label>Sede</label>
+                            <select name="id_sede">
+                                {% for s in sedes %}
+                                <option value="{{ s.id_sede }}">{{ s.nombre_sede }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-crear" style="align-self:flex-end; height:fit-content;">Publicar</button>
+                    </form>
+                    {% endif %}
+                    
+                    <h3 style="font-weight: 700; margin-top:2rem;">Cronograma General de Actividades</h3>
+                    <table class="tabla-pec">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Actividad</th>
+                                <th>Descripción</th>
+                                <th>Fecha</th>
+                                <th>Parcial</th>
+                                <th>Encargado</th>
+                                <th>Lugar</th>
+                                <th>Avance / Estado</th> {% if session['rol'] in ['admin', 'docente'] %}<th>Acciones</th>{% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for a in actividades %}
+                            <tr>
+                                <td><strong>{{ a.id_actividad }}</strong></td>
+                                <td><strong>{{ a.nombre_actividad }}</strong></td>
+                                <td>{{ a.descripcion }}</td>
+                                <td>{{ a.fecha_programada }}</td>
+                                <td>{{ a.parcial }}</td>
+                                <td>{{ a.nombre_responsable if a.nombre_responsable else 'N/A' }}</td>
+                                <td>{{ a.nombre_sede if a.nombre_sede else 'N/A' }}</td>
+                                
+                                <td>
+                                    {% if session['rol'] == 'alumno' %}
+                                    <form action="/actividades/estatus/{{ a.id_actividad }}" method="POST" style="display:inline;">
+                                        <select name="nuevo_estatus" onchange="this.form.submit()" style="padding: 0.4rem; border-radius: 6px; font-weight: 600; font-family: inherit; background-color: #fff; border: 1px solid #cbd5e1; font-size: 0.85rem;">
+                                            <option value="No empezado" {% if a.estatus == 'No empezado' or not a.estatus %}selected{% endif %}>❌ No empezado</option>
+                                            <option value="En proceso" {% if a.estatus == 'En proceso' %}selected{% endif %}>⏳ En proceso</option>
+                                            <option value="Terminado" {% if a.estatus == 'Terminado' %}selected{% endif %}>✅ Terminado</option>
+                                        </select>
+                                    </form>
+                                    {% else %}
+                                        {% if a.estatus == 'En proceso' %}
+                                            <span class="estatus-badge estatus-en-proceso">⏳ En proceso</span>
+                                        {% elif a.estatus == 'Terminado' %}
+                                            <span class="estatus-badge estatus-terminado">✅ Terminado</span>
+                                        {% else %}
+                                            <span class="estatus-badge estatus-no-empezado">❌ No empezado</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+
+                                {% if session['rol'] in ['admin', 'docente'] %}
+                                <td>
+                                    <a href="/actividades/editar/{{ a.id_actividad }}" class="btn-acc-edit">Editar</a>
+                                    <a href="/actividades/eliminar/{{ a.id_actividad }}" class="btn-acc-del" onclick="return confirm('¿Eliminar actividad?')">Eliminar</a>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="panel-evidencias" class="seccion-tab-contenido" style="display:none;">
+                <div class="caja-modulo">
+                    {% if session['rol'] in ['admin', 'alumno'] %}
+                    <h2 class="titulo-modulo">Subir Reporte de Evidencia Oficial</h2>
+                    <form action="/evidencias/crear" method="POST" enctype="multipart/form-data" class="grid-formulario">
+                        <div class="campo-panel">
+                            <label>Actividad Asociada</label>
+                            <select name="id_actividad" required>
+                                {% for a in actividades %}
+                                <option value="{{ a.id_actividad }}">{{ a.nombre_actividad }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="campo-panel"><label>Nombre de Alumno / Equipo</label><input type="text" name="alumno_nombre" required></div>
+                        <div class="campo-panel">
+                            <label>Tipo de Evidencia</label>
+                            <select name="tipo_evidencia" required>
+                                <option value="Fotografía">Fotografía</option>
+                                <option value="Video MP4">Video MP4</option>
+                                <option value="Documento PDF">Documento PDF</option>
+                            </select>
+                        </div>
+                        <div class="campo-panel"><label>Archivo Adjunto</label><input type="file" name="archivo_evidencia" required></div>
+                        <div class="campo-panel" style="grid-column: span 2;"><label>Descripción del Trabajo</label><input type="text" name="descripcion_evidencia" placeholder="Detalles de la entrega..."></div>
+                        <button type="submit" class="btn-crear" style="grid-column: span 2; padding:0.8rem;">Enviar Evidencia</button>
+                    </form>
+                    {% endif %}
+                    
+                    <h3 style="font-weight: 700; margin-top:2rem;">Reportes de Evidencia Entregados</h3>
+                    <table class="tabla-pec">
+                        <thead><tr><th>ID</th><th>Actividad</th><th>Alumno / Equipo</th><th>Tipo</th><th>Descripción</th><th>Archivo</th><th>Acciones</th></tr></thead>
+                        <tbody>
+                            {% for e in evidencias %}
+                            <tr>
+                                <td><strong>{{ e.id_evidencia }}</strong></td>
+                                <td>{{ e.nombre_actividad }}</td>
+                                <td>{{ e.alumno_nombre }}</td>
+                                <td>{{ e.tipo_evidencia }}</td>
+                                <td>{{ e.descripcion_evidencia }}</td>
+                                <td><a href="{{ url_for('static', filename='archivos_evidencias/' + e.url_archivo) }}" target="_blank" style="color:#0284c7; font-weight:700;">Ver Archivo</a></td>
+                                <td>
+                                    {% if session['rol'] in ['admin', 'alumno'] %}
+                                    <a href="/evidencias/editar/{{ e.id_evidencia }}" class="btn-acc-edit">Editar</a>
+                                    <a href="/evidencias/eliminar/{{ e.id_evidencia }}" class="btn-acc-del" onclick="return confirm('¿Eliminar evidencia?')">Eliminar</a>
+                                    {% else %}
+                                    <span style="color:#94a3b8; font-style:italic;">Solo lectura</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const botones = document.querySelectorAll(".btn-tab-modulo");
+            const contenidos = document.querySelectorAll(".seccion-tab-contenido");
+
+            function alternarModulo(targetId) {
+                contenidos.forEach(cont => {
+                    if (cont.id === targetId) {
+                        cont.style.display = "block";
+                    } else {
+                        cont.style.display = "none";
+                    }
+                });
+
+                botones.forEach(btn => {
+                    if (btn.getAttribute("data-target") === targetId) {
+                        btn.style.background = "#1e40af";
+                        btn.style.color = "#ffffff";
+                        btn.style.borderColor = "#1e40af";
+                    } else {
+                        btn.style.background = "#ffffff";
+                        btn.style.color = "#0f172a";
+                        btn.style.borderColor = "#cbd5e1";
+                    }
+                });
+            }
+
+            botones.forEach(boton => {
+                boton.addEventListener("click", function() {
+                    alternarModulo(this.getAttribute("data-target"));
+                });
+            });
+
+            if (botones.length > 0) {
+                botones[0].click();
+            }
+        });
+    </script>
+</body>
+</html>

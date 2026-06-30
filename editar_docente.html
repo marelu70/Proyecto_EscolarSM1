@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>PEC | Editar Docente</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+    <style>
+        .contenedor-editar { max-width: 600px; margin: 5rem auto; background: #ffffff; padding: 2.5rem; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; font-family: 'Montserrat', sans-serif; }
+        .titulo-editar { color: #1e3a8a; margin-bottom: 1.5rem; font-weight: 700; }
+        .grupo-form { margin-bottom: 1.2rem; }
+        .grupo-form label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: #475569; font-size: 0.9rem; }
+        .grupo-form input { width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-family: inherit; }
+        .botones-flex { display: flex; gap: 1rem; margin-top: 2rem; }
+        .btn-act { background: #1e3a8a; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; flex: 1; }
+        .btn-act:hover { background: #2563eb; }
+        .btn-can { background: #64748b; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; flex: 1; }
+        .btn-can:hover { background: #475569; }
+    </style>
+</head>
+<body style="background-color: #f8fafc;">
+
+    <div class="contenedor-editar">
+        <h2 class="titulo-editar">Modificar Datos del Docente</h2>
+        
+        <form action="/responsables/editar/{{ r.id_responsable }}" method="POST">
+            <div class="grupo-form">
+                <label>Nombre Completo</label>
+                <input type="text" name="nombre_completo" value="{{ r.nombre_completo }}" required>
+            </div>
+            <div class="grupo-form">
+                <label>Título Profesional</label>
+                <input type="text" name="titulo_profesional" value="{{ r.titulo_profesional if r.titulo_profesional else '' }}">
+            </div>
+            <div class="grupo-form">
+                <label>Cargo</label>
+                <input type="text" name="cargo" value="{{ r.cargo }}" required>
+            </div>
+            
+            <div class="botones-flex">
+                <button type="submit" class="btn-act">Guardar Cambios</button>
+                <a href="/dashboard" class="btn-can">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+</body>
+</htmzl>

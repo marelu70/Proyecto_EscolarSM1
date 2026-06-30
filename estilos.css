@@ -1,0 +1,357 @@
+/* --- VARIABLES Y RESET --- */
+:root {
+    --azul-primario: #1e40af;   /* Azul Profundo */
+    --azul-vibrante: #3b82f6;   /* Azul Eléctrico para jóvenes */
+    --azul-fondo: #f8fafc;      /* Blanco azulado muy suave */
+    --blanco: #ffffff;
+    --texto: #0f172a;           /* Gris pizarra casi negro */
+    --texto-light: #64748b;
+    --transicion: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    color: var(--texto);
+    background-color: var(--blanco);
+    line-height: 1.7;
+}
+
+.contenedor { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+.contenedor-chico { max-width: 800px; margin: 0 auto; padding: 0 2rem; text-align: center; }
+
+/* --- NAVEGACIÓN --- */
+.menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 5%;
+    background: var(--blanco);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--azul-primario);
+    letter-spacing: -1px;
+}
+
+.logo span { color: var(--azul-vibrante); }
+
+.menu ul {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+}
+
+.menu a {
+    text-decoration: none;
+    color: var(--texto);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: var(--transicion);
+}
+
+.menu a:hover { color: var(--azul-vibrante); }
+
+.boton-nav {
+    background: var(--azul-primario);
+    color: var(--blanco) !important;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+}
+
+.boton-nav:hover { background: var(--azul-vibrante); transform: scale(1.05); }
+
+/* --- HERO SECTION --- */
+.hero {
+    height: 80vh;
+    background: linear-gradient(135deg, rgba(30, 64, 175, 0.95) 0%, rgba(59, 130, 246, 0.85) 100%), 
+                url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--blanco);
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    max-width: 700px;
+    margin: 0 auto 2.5rem;
+    opacity: 0.95;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+}
+
+/* --- BOTONES --- */
+.boton-principal, .boton-secundario {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: var(--transicion);
+}
+
+.boton-principal {
+    background: var(--blanco);
+    color: var(--azul-primario);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.boton-outline {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    border: 2px solid var(--blanco);
+    color: var(--blanco);
+    transition: var(--transicion);
+}
+
+.boton-principal:hover, .boton-outline:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+
+.boton-secundario {
+    background: var(--azul-primario);
+    color: var(--blanco);
+}
+
+/* --- SECCIONES --- */
+.seccion { padding: 6rem 0; }
+
+.etiqueta {
+    display: inline-block;
+    color: var(--azul-vibrante);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+}
+
+.seccion h2 { font-size: 2.5rem; font-weight: 800; margin-bottom: 2rem; color: var(--azul-primario); }
+
+.seccion-objetivos {
+    background: var(--azul-fondo);
+    padding: 5rem 0;
+    text-align: center;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+/* --- TARJETAS --- */
+.seccion-comunidad { padding: 6rem 0; background-color: var(--blanco); text-align: center; }
+
+.tarjetas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2.5rem;
+    margin-top: 4rem;
+}
+
+.tarjeta-info {
+    padding: 3.5rem 2rem;
+    background: var(--blanco);
+    border-radius: 20px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    transition: var(--transicion);
+}
+
+.tarjeta-info:hover {
+    transform: translateY(-10px);
+    border-color: var(--azul-vibrante);
+    box-shadow: 0 20px 40px rgba(30, 64, 175, 0.1);
+}
+
+.tarjeta-info .icon { font-size: 3rem; margin-bottom: 1.5rem; }
+.tarjeta-info h3 { font-size: 1.5rem; margin-bottom: 1rem; color: var(--azul-primario); }
+
+/* --- CTA FINAL --- */
+.cta-final {
+    background: var(--azul-primario);
+    color: var(--blanco);
+    padding: 6rem 0;
+    text-align: center;
+}
+
+.cta-final h2 { font-size: 2.8rem; font-weight: 800; margin-bottom: 1rem; }
+
+/* --- FOOTER (PAGINA OFICIAL CECYTEM) --- */
+footer {
+    padding: 3.5rem 0;
+    background: #0f172a;
+    color: #94a3b8;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+/* ==========================================================================
+   NUEVOS ESTILOS EXCLUSIVOS PARA LA PANTALLA DE LOGIN
+   ========================================================================== */
+
+.body-login {
+    background-color: var(--azul-fondo);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.contenedor-login {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.tarjeta-login {
+    background: var(--blanco);
+    max-width: 450px;
+    width: 100%;
+    padding: 3rem 2.5rem;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 15px 35px rgba(30, 64, 175, 0.05);
+    text-align: center;
+}
+
+.logo-login {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--azul-primario);
+    letter-spacing: -1px;
+    margin-bottom: 0.5rem;
+}
+
+.logo-login span {
+    color: var(--azul-vibrante);
+}
+
+.tarjeta-login h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--texto);
+    margin-bottom: 0.5rem;
+}
+
+.subtitulo-login {
+    color: var(--texto-light);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+.grupo-formulario {
+    text-align: left;
+    margin-bottom: 1.25rem;
+}
+
+.grupo-formulario label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--texto);
+    margin-bottom: 0.5rem;
+}
+
+.grupo-formulario input,
+.grupo-formulario select {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    color: var(--texto);
+    background-color: var(--blanco);
+    transition: var(--transicion);
+    outline: none;
+}
+
+.grupo-formulario input:focus,
+.grupo-formulario select:focus {
+    border-color: var(--azul-vibrante);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.boton-login {
+    width: 100%;
+    background: var(--azul-primario);
+    color: var(--blanco);
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transicion);
+    margin-top: 1rem;
+}
+
+.boton-login:hover {
+    background: var(--azul-vibrante);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+}
+
+.regresar-inicio {
+    margin-top: 1.5rem;
+}
+
+.regresar-inicio a {
+    text-decoration: none;
+    font-size: 0.85rem;
+    color: var(--azul-vibrante);
+    font-weight: 600;
+    transition: var(--transicion);
+}
+
+.regresar-inicio a:hover {
+    color: var(--azul-primario);
+    text-decoration: underline;
+}
+
+.footer-login {
+    padding: 2rem 0;
+    background: #0f172a;
+    color: #94a3b8;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 500;
+}

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PEC | Proyecto Escolar Comunitario</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+<body>
+
+    <header class="encabezado">
+        <nav class="menu">
+            <div class="logo">Proyecto <span>PEC</span></div>
+            <ul>
+                <li><a href="/">Inicio</a></li>
+                <li><a href="#presentacion">Sobre Nosotros</a></li>
+                <li><a href="#roles">Comunidad</a></li>
+                <li><a href="/login" class="boton-nav">Acceder</a></li>
+            </ul>
+        </nav>
+
+        <div class="hero">
+            <div class="hero-content">
+                <h1>Conciencia Ambiental en nuestra Comunidad</h1>
+                <p>
+                    El Proyecto Escolar Comunitario (PEC) es el punto de encuentro para alumnos, 
+                    responsables y administrativos unidos por un futuro sustentable.
+                </p>
+                <div class="hero-buttons">
+                    <a href="/login" class="boton-principal">Entrar al Sistema</a>
+                    <a href="#presentacion" class="boton-outline">Saber más</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="presentacion" class="seccion">
+            <div class="contenedor-chico">
+                <span class="etiqueta">Nuestra Misión</span>
+                <h2>¿Qué es el Proyecto PEC?</h2>
+                <p>
+                    Es una plataforma interactiva diseñada para la <strong>concientización ecológica</strong>. 
+                    Aquí, la tecnología se une con la acción comunitaria para gestionar iniciativas que 
+                    protejan nuestro entorno institucional y local.
+                </p>
+                <p>
+                    Nuestro sistema CRUD permite un seguimiento real de campañas, reportes de impacto y 
+                    colaboración directa entre todos los niveles de la comunidad educativa.
+                </p>
+            </div>
+        </section>
+
+        <section class="seccion-objetivos">
+            <div class="contenedor">
+                <h2>Objetivo Estratégico</h2>
+                <p>
+                    Centralizar la gestión ambiental mediante una interfaz intuitiva que permita 
+                    a cada usuario realizar acciones específicas, eliminando barreras de comunicación 
+                    y maximizando el impacto de cada semilla plantada.
+                </p>
+            </div>
+        </section>
+
+        <section id="roles" class="seccion-comunidad">
+            <div class="contenedor">
+                <span class="etiqueta">Roles del Sistema</span>
+                <h2>Participación Activa</h2>
+                <div class="tarjetas">
+                    <div class="tarjeta-info">
+                        <div class="icon">🌱</div>
+                        <h3>Alumnos</h3>
+                        <p>Inscríbete en brigadas, propón ideas ecológicas y visualiza el impacto de tus acciones por el planeta.</p>
+                    </div>
+
+                    <div class="tarjeta-info">
+                        <div class="icon">👥</div>
+                        <h3>Responsables</h3>
+                        <p>Coordina proyectos, valida actividades de los alumnos y supervisa el progreso de las metas ambientales.</p>
+                    </div>
+
+                    <div class="tarjeta-info">
+                        <div class="icon">🏛️</div>
+                        <h3>Administrativos</h3>
+                        <p>Control total del sistema: gestión de usuarios, reportes generales y autorización de nuevas campañas.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-final">
+            <div class="contenedor">
+                <h2>¿Listo para el cambio?</h2>
+                <p>Únete a la plataforma PEC y comienza a gestionar el cambio ambiental hoy mismo.</p>
+                <a href="/login" class="boton-secundario">Continuar al Login</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="contenedor">
+            <p>&copy; 2026 Proyecto PEC | Colegio de Estudios Científicos y Tecnológicos del Estado de México</p>
+        </div>
+    </footer>
+
+</body>
+</html>

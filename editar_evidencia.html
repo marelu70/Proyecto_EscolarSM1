@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PEC | Editar Evidencia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+    <style>
+        .seccion-editar { padding: 4rem 0; background-color: #f8fafc; min-height: 80vh; display: flex; align-items: center; justify-content: center; }
+        .caja-editar { background: #ffffff; padding: 2.5rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 550px; border: 1px solid #e2e8f0; }
+        .formulario-editar { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 1.5rem; }
+        .campo-grupo { display: flex; flex-direction: column; gap: 0.4rem; position: relative; }
+        .campo-grupo label { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.85rem; color: #1e293b; text-transform: uppercase; }
+        .campo-grupo input, .campo-grupo select { padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-size: 0.9rem; color: #334155; }
+        .btn-actualizar { background: #0f172a; color: #ffffff; border: none; padding: 1rem; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-weight: 700; cursor: pointer; font-size: 0.95rem; margin-top: 0.5rem; }
+        .btn-actualizar:hover { background: #1e293b; }
+
+        /* Contenedor del desplegable múltiple elegante */
+        .combo-multiple { position: relative; width: 100%; }
+        .select-simulado { padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-size: 0.9rem; color: #334155; background-color: #fff; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .select-simulado::after { content: '▼'; font-size: 0.7rem; color: #64748b; }
+        .opciones-desplegables { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; max-height: 220px; overflow-y: auto; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-top: 4px; padding: 0.5rem; }
+        .opciones-desplegables.activo { display: block; }
+        .opcion-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem; font-family: 'Montserrat', sans-serif; font-size: 0.9rem; color: #334155; cursor: pointer; border-radius: 6px; }
+        .opcion-item:hover { background-color: #f1f5f9; }
+        .opcion-item input[type="checkbox"] { cursor: pointer; width: auto; padding: 0; margin: 0; }
+    </style>
+</head>
+<body>
+
+    <main class="seccion-editar">
+        <div class="caja-editar">
+            <a href="{{ url_for('dashboard') }}" style="font-family: 'Montserrat', sans-serif; color: #64748b; text-decoration: none; font-weight: 600; font-size: 0.9rem;">← Volver al Panel</a>
+            
+            <h2 style="font-family: 'Montserrat', sans-serif; font-weight: 800; color: #0f172a; margin-top: 1.5rem;">Modificar Evidencia PEC</h2>
+            <p style="font-family: 'Montserrat', sans-serif; color: #64748b; font-size: 0.9rem;">Actualiza el archivo o los detalles de la entrega comunitaria de tu equipo.</p>
+
+            <form action="/evidencias/editar/{{ evidencia.id_evidencia }}" method="POST" enctype="multipart/form-data" class="formulario-editar">
+                
+                <div class="campo-grupo">
+                    <label>Actividad Relacionada</label>
+                    <select name="id_actividad" required>
+                        {% for a in actividades %}
+                            <option value="{{ a.id_actividad }}" {% if a.id_actividad == evidencia.id_actividad %}selected{% endif %}>{{ a.nombre_actividad }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="campo-grupo">
+                    <label>Nombre del Alumno / Equipo</label>
+                    <input type="text" name="alumno_nombre" value="{{ evidencia.alumno_nombre }}" required>
+                </div>
+
+                <div class="campo-grupo">
+                    <label>Tipo de Evidencia</label>
+                    <select name="tipo_evidencia" required>
+                        <option value="Fotografía" {% if evidencia.tipo_evidencia == 'Fotografía' %}selected{% endif %}>Fotografía</option>
+                        <option value="Video Tik Tok / MP4" {% if evidencia.tipo_evidencia == 'Video Tik Tok / MP4' %}selected{% endif %}>Video Tik Tok / MP4</option>
+                        <option value="Documento PDF" {% if evidencia.tipo_evidencia == 'Documento PDF' %}selected{% endif %}>Documento PDF</option>
+                    </select>
+                </div>
+
+                <div class="campo-grupo">
+                    <label>Archivo Adjunto (Dejar vacío para conservar el actual)</label>
+                    <input type="file" name="archivo_evidencia">
+                    <span style="font-size: 0.75rem; color: #94a3b8; font-style: italic; margin-top: 0.2rem;">Archivo actual: {{ evidencia.url_archivo }}</span>
+                </div>
+
+                <div class="campo-grupo">
+                    <label>Docentes que Validaron / Revisaron</label>
+                    <div class="combo-multiple">
+                        <button type="button" class="select-simulado" id="btnSelectDocentes">Seleccionar Docentes...</button>
+                        <div class="opciones-desplegables" id="listaDocentes">
+                            {% for r in responsables %}
+                                <label class="opcion-item">
+                                    <input type="checkbox" name="docentes_evidencia" value="{{ r.nombre_completo }}" {% if r.nombre_completo in evidencia.docentes_evidencia %}checked{% endif %}>
+                                    {{ r.nombre_completo }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="campo-grupo">
+                    <label>Notas o Descripción de la Evidencia</label>
+                    <input type="text" name="descripcion_evidencia" value="{{ evidencia.descripcion_evidencia }}">
+                </div>
+
+                <button type="submit" class="btn-actualizar">Guardar Cambios Oficiales</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        const btnSelectDocentes = document.getElementById('btnSelectDocentes');
+        const listaDocentes = document.getElementById('listaDocentes');
+
+        // Desplegar o colapsar el menú al dar clic en la fila
+        btnSelectDocentes.addEventListener('click', (e) => {
+            e.stopPropagation();
+            listaDocentes.classList.toggle('activo');
+        });
+
+        // Ocultar la lista automáticamente si el usuario hace clic fuera de ella
+        document.addEventListener('click', (e) => {
+            if (!listaDocentes.contains(e.target) && e.target !== btnSelectDocentes) {
+                listaDocentes.classList.remove('activo');
+            }
+        });
+
+        // Modificar dinámicamente el texto que muestra la fila
+        function actualizarTextoBoton() {
+            const seleccionados = Array.from(listaDocentes.querySelectorAll('input[type="checkbox"]:checked'))
+                                       .map(cb => cb.value);
+            if (seleccionados.length === 0) {
+                btnSelectDocentes.textContent = 'Seleccionar Docentes...';
+            } else if (seleccionados.length <= 2) {
+                btnSelectDocentes.textContent = seleccionados.join(', ');
+            } else {
+                btnSelectDocentes.textContent = `${seleccionados.length} Docentes seleccionados`;
+            }
+        }
+
+        // Ejecutar evento cada que el usuario marque o desmarque un maestro
+        listaDocentes.addEventListener('change', actualizarTextoBoton);
+
+        // Inicializar texto al cargar la página por primera vez
+        actualizarTextoBoton();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PEC | Iniciar Sesión</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+<body class="body-login">
+
+    <div class="contenedor-login">
+        <div class="tarjeta-login">
+            <div class="logo-login">Proyecto <span>PEC</span></div>
+            <h2>Control de Acceso</h2>
+            <p class="subtitulo-login">Selecciona tu perfil e ingresa tus credenciales para acceder al sistema comunitario.</p>
+            
+            {% if get_flashed_messages() %}
+                {% for message in get_flashed_messages() %}
+                    <div style="padding: 0.8rem; margin-bottom: 1rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; text-align: left; background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <form action="/login" method="POST">
+                <div class="grupo-formulario">
+                    <label for="rol">Tipo de Usuario / Rol</label>
+                    <select id="rol" name="rol" required>
+                        <option value="" disabled selected>-- Elige tu rol --</option>
+                        <option value="alumno">Alumno</option>
+                        <option value="docente">Responsable (Docente)</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+
+                <div class="grupo-formulario">
+                    <label for="usuario">Nombre de Usuario</label>
+                    <input type="text" id="usuario" name="username" placeholder="Ej. Alumno" required autocomplete="off">
+                </div>
+
+                <div class="grupo-formulario">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="boton-login">Ingresar al Sistema</button>
+            </form>
+
+            <div class="regresar-inicio">
+                <a href="/">← Volver a la página de inicio</a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer-login">
+        <div class="contenedor">
+            <p>&copy; 2026 Proyecto PEC | Colegio de Estudios Científicos y Tecnológicos del Estado de México</p>
+        </div>
+    </footer>
+
+</body>
+</html>
