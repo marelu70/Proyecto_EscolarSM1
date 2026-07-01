@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 app.secret_key = "clave_secreta_pec_2026"
 
-# Carpeta de subidas
+# Carpeta de subidas organizada dentro de static/evidencias
 CARPA_EVIDENCIAS = os.path.join('static', 'evidencias')
 os.makedirs(CARPA_EVIDENCIAS, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = CARPA_EVIDENCIAS
@@ -345,6 +345,9 @@ def eliminar_evidencia(id):
 @app.route('/ver-evidencia/<filename>')
 def ver_archivo_evidencia(filename):
     """Fuerza al navegador a procesar y renderizar el PDF independientemente de las rutas estáticas"""
+    # Si es un PDF, inyectamos explícitamente el mimetype para resolver el error de carga de Chrome/Firefox
+    if filename.lower().endswith('.pdf'):
+        return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=False, mimetype='application/pdf')
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=False)
 
 if __name__ == "__main__":
