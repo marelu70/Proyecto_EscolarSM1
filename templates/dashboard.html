@@ -64,7 +64,7 @@
             <div class="encabezado-panel">
                 <div>
                     <h1 style="font-weight: 800; font-size: 2.2rem; color: #0f172a;">Sistema de Control PEC</h1>
-                    <p style="color: var(--texto-light);">Acceso autorizado para consulta y administración de evidencias y actividades escolares.</p>
+                    <p style="color: var(--texto-light);">Acceso authorized para consulta y administración de evidencias y actividades escolares.</p>
                 </div>
             </div>
 
@@ -321,7 +321,7 @@
                                 <td>{{ e.alumno_nombre }}</td>
                                 <td>{{ e.tipo_evidencia }}</td>
                                 <td>{{ e.descripcion_evidencia }}</td>
-                                <td><a href="{{ url_for('static', filename='archivos_evidencias/' + e.url_archivo) }}" target="_blank" style="color:#0284c7; font-weight:700;">Ver Archivo</a></td>
+                                <td><a href="{{ url_for('static', filename='evidencias/' + e.url_archivo) }}" target="_blank" style="color:#0284c7; font-weight:700;">Ver Archivo</a></td>
                                 <td>
                                     {% if session['rol'] in ['admin', 'alumno'] %}
                                     <a href="/evidencias/editar/{{ e.id_evidencia }}" class="btn-acc-edit">Editar</a>
