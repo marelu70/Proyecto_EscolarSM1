@@ -1,6 +1,7 @@
 import os  # <-- ¡Faltaba esta importación!
 import sqlite3
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+# Se agregó 'send_from_directory' a las importaciones de Flask
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
@@ -338,6 +339,14 @@ def eliminar_evidencia(id):
     conn.commit()
     conn.close()
     return redirect(url_for("dashboard"))
+
+# ==========================================
+# CONTROL DE ENVIOS / RUTA DINÁMICA DE ARCHIVOS
+# ==========================================
+@app.route('/static/evidencias/<filename>')
+def ver_archivo_evidencia(filename):
+    """Obliga al navegador a servir e interpretar correctamente el tipo de archivo (incluidos PDFs)"""
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
