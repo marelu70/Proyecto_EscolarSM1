@@ -1,13 +1,12 @@
 import os
 import sqlite3
-from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = "clave_secreta_pec_2026"
 
-# Carpeta de evidencias dentro de static (tal como está en tu GitHub)
-CARPA_EVIDENCIAS = os.path.join('static', 'evidencias')
+CARPA_EVIDENCIAS = os.path.join('static', 'archivos_evidencias')
 os.makedirs(CARPA_EVIDENCIAS, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = CARPA_EVIDENCIAS
 
@@ -16,43 +15,6 @@ DATABASE = "pec_comunidad.db"
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
-    
-    # ASEGURAR QUE LA TABLA DE USUARIOS EXISTA EN PRODUCCIÓN
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS usuario (
-            id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT NOT NULL UNIQUE,
-            password TEXT NOT NULL,
-            rol TEXT NOT NULL
-        )
-    ''')
-    conn.commit()
-    
-    # VERIFICAR SI YA HAY USUARIOS CREADOS
-    usuarios_base = conn.execute("SELECT COUNT(*) as total FROM usuario").fetchone()
-    if usuarios_base['total'] == 0:
-        # LISTA CON TUS DATOS REALES DIRECTO AL SERVIDOR
-        usuarios = [
-            ('admin_pec', 'control2026', 'admin'),
-            ('marely', 'marely123', 'alumno'),
-            ('estefania', 'estefania123', 'alumno'),
-            ('jorge', 'jorge123', 'alumno'),
-            ('abigail', 'abigail123', 'alumno'),
-            ('alexa', 'alexa123', 'alumno'),
-            ('eduardo', 'eduardo123', 'alumno'),
-            ('oralia_portillo', 'profe1', 'docente'),
-            ('jos_luis', 'profe2', 'docente'),
-            ('edith_b', 'profe3', 'docente'),
-            ('beatriz_t', 'profe4', 'docente'),
-            ('victor_j', 'profe5', 'docente'),
-            ('rosa_c', 'profe6', 'docente')
-        ]
-        conn.executemany("""
-            INSERT OR IGNORE INTO usuario (username, password, rol) 
-            VALUES (?, ?, ?)
-        """, usuarios)
-        conn.commit()
-        
     return conn
 
 # ==========================================
@@ -61,6 +23,7 @@ def get_db_connection():
 
 @app.route("/")
 def index():
+    # Renderiza directamente tu página de presentación del Proyecto PEC
     return render_template("index.html")
 
 @app.route("/login", methods=["GET", "POST"])
@@ -142,6 +105,7 @@ def dashboard():
     responsables = conn.execute("SELECT * FROM responsable").fetchall()
     sedes = conn.execute("SELECT * FROM sede").fetchall()
     
+    # SE AGREGO LA COLUMNA ESTATUS EN LA CONSULTA
     actividades = conn.execute('''
         SELECT a.*, r.nombre_completo AS nombre_responsable, s.nombre_sede 
         FROM actividad a
@@ -375,14 +339,6 @@ def eliminar_evidencia(id):
     conn.commit()
     conn.close()
     return redirect(url_for("dashboard"))
-
-# ==========================================
-# RUTA INTEGRADA PARA ARCHIVOS (SOLO FOTOS)
-# ==========================================
-@app.route('/ver-evidencia/<filename>')
-def ver_archivo_evidencia(filename):
-    """Devuelve las fotos o archivos sin forzar procesamiento PDF genérico"""
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=False)
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
