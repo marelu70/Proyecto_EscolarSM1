@@ -58,13 +58,13 @@
                     <div style="padding: 1rem; margin-bottom: 1.5rem; border-radius: 8px; font-weight: 600; background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0;">
                         {{ message }}
                     </div>
-                {% endfor %}
+                </for>
             {% endif %}
 
             <div class="encabezado-panel">
                 <div>
                     <h1 style="font-weight: 800; font-size: 2.2rem; color: #0f172a;">Sistema de Control PEC</h1>
-                    <p style="color: var(--texto-light);">Acceso authorized para consulta y administración de evidencias y actividades escolares.</p>
+                    <p style="color: var(--texto-light);">Acceso autorizado para consulta y administración de evidencias y actividades escolares.</p>
                 </div>
             </div>
 
@@ -258,7 +258,7 @@
                                             <option value="Terminado" {% if a.estatus == 'Terminado' %}selected{% endif %}>✅ Terminado</option>
                                         </select>
                                     </form>
-                                    {% else %}
+                                    {% align_else %}
                                         {% if a.estatus == 'En proceso' %}
                                             <span class="estatus-badge estatus-en-proceso">⏳ En proceso</span>
                                         {% elif a.estatus == 'Terminado' %}
@@ -321,7 +321,7 @@
                                 <td>{{ e.alumno_nombre }}</td>
                                 <td>{{ e.tipo_evidencia }}</td>
                                 <td>{{ e.descripcion_evidencia }}</td>
-                                <td><a href="{{ url_for('static', filename='evidencias/' + e.url_archivo) }}" target="_blank" style="color:#0284c7; font-weight:700;">Ver Archivo</a></td>
+                                <td><a href="{{ url_for('ver_archivo_evidencia', filename=e.url_archivo) }}" target="_blank" style="color:#0284c7; font-weight:700;">Ver Archivo</a></td>
                                 <td>
                                     {% if session['rol'] in ['admin', 'alumno'] %}
                                     <a href="/evidencias/editar/{{ e.id_evidencia }}" class="btn-acc-edit">Editar</a>
