@@ -1,4 +1,4 @@
-import os
+import os  # <-- ¡Faltaba esta importación!
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.utils import secure_filename
@@ -6,7 +6,8 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 app.secret_key = "clave_secreta_pec_2026"
 
-CARPA_EVIDENCIAS = os.path.join('static', 'archivos_evidencias')
+# Cambiado para que coincida exactamente con la carpeta 'evidencias' de GitHub
+CARPA_EVIDENCIAS = os.path.join('static', 'evidencias')
 os.makedirs(CARPA_EVIDENCIAS, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = CARPA_EVIDENCIAS
 
@@ -23,7 +24,6 @@ def get_db_connection():
 
 @app.route("/")
 def index():
-    # Renderiza directamente tu página de presentación del Proyecto PEC
     return render_template("index.html")
 
 @app.route("/login", methods=["GET", "POST"])
@@ -105,7 +105,6 @@ def dashboard():
     responsables = conn.execute("SELECT * FROM responsable").fetchall()
     sedes = conn.execute("SELECT * FROM sede").fetchall()
     
-    # SE AGREGO LA COLUMNA ESTATUS EN LA CONSULTA
     actividades = conn.execute('''
         SELECT a.*, r.nombre_completo AS nombre_responsable, s.nombre_sede 
         FROM actividad a
