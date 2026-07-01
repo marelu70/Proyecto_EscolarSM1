@@ -104,7 +104,7 @@
                             {% endfor %}
                         </ul>
                     </div>
-                {% else %}
+                {% id else %}
                     <p style="color: #b91c1c; font-weight: 700; margin:0;">No se encontró ningún registro con ese ID en este módulo.</p>
                 {% endif %}
                 <div style="margin-top:1rem;"><a href="/dashboard" style="font-size: 0.85rem; color: #1e40af; font-weight: 700;">Limpiar Filtro</a></div>
@@ -321,7 +321,13 @@
                                 <td>{{ e.alumno_nombre }}</td>
                                 <td>{{ e.tipo_evidencia }}</td>
                                 <td>{{ e.descripcion_evidencia }}</td>
-                                <td><a href="{{ url_for('static', filename='archivos_evidencias/' + e.url_archivo) }}" target="_blank" style="color:#0284c7; font-weight:700;">Ver Archivo</a></td>
+                                <td>
+                                    {% if e.url_archivo and e.url_archivo != 'sin_archivo.png' %}
+                                        <a href="{{ url_for('static', filename='archivos_evidencias/' ~ e.url_archivo) }}" target="_blank" style="color:#0284c7; font-weight:700;">Ver Archivo</a>
+                                    {% else %}
+                                        <span style="color:#94a3b8; font-style:italic;">Sin archivo</span>
+                                    {% endif %}
+                                </td>
                                 <td>
                                     {% if session['rol'] in ['admin', 'alumno'] %}
                                     <a href="/evidencias/editar/{{ e.id_evidencia }}" class="btn-acc-edit">Editar</a>
