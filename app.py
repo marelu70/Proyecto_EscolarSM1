@@ -1,13 +1,12 @@
-import os  # <-- ¡Faltaba esta importación!
+import os
 import sqlite3
-# Se agregó 'send_from_directory' a las importaciones de Flask
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = "clave_secreta_pec_2026"
 
-# Cambiado para que coincida exactamente con la carpeta 'evidencias' de GitHub
+# Carpeta de subidas
 CARPA_EVIDENCIAS = os.path.join('static', 'evidencias')
 os.makedirs(CARPA_EVIDENCIAS, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = CARPA_EVIDENCIAS
@@ -341,12 +340,12 @@ def eliminar_evidencia(id):
     return redirect(url_for("dashboard"))
 
 # ==========================================
-# CONTROL DE ENVIOS / RUTA DINÁMICA DE ARCHIVOS
+# RUTA INTEGRADA Y PROTEGIDA PARA ARCHIVOS
 # ==========================================
-@app.route('/static/evidencias/<filename>')
+@app.route('/ver-evidencia/<filename>')
 def ver_archivo_evidencia(filename):
-    """Obliga al navegador a servir e interpretar correctamente el tipo de archivo (incluidos PDFs)"""
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    """Fuerza al navegador a procesar y renderizar el PDF independientemente de las rutas estáticas"""
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=False)
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
