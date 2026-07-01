@@ -1,4 +1,4 @@
-import os
+import os  # <-- ¡ESTA ES LA LÍNEA QUE FALTA Y CAUSA EL ERROR 500!
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.utils import secure_filename
