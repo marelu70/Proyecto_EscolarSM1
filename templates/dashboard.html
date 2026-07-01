@@ -58,7 +58,7 @@
                     <div style="padding: 1rem; margin-bottom: 1.5rem; border-radius: 8px; font-weight: 600; background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0;">
                         {{ message }}
                     </div>
-                </for>
+                {% endfor %}
             {% endif %}
 
             <div class="encabezado-panel">
@@ -241,7 +241,7 @@
                         <tbody>
                             {% for a in actividades %}
                             <tr>
-                                <td><strong>{{ a.id_actividad }}</strong></td>
+                                <td>export <strong>{{ a.id_actividad }}</strong></td>
                                 <td><strong>{{ a.nombre_actividad }}</strong></td>
                                 <td>{{ a.descripcion }}</td>
                                 <td>{{ a.fecha_programada }}</td>
@@ -258,7 +258,7 @@
                                             <option value="Terminado" {% if a.estatus == 'Terminado' %}selected{% endif %}>✅ Terminado</option>
                                         </select>
                                     </form>
-                                    {% align_else %}
+                                    {% else %}
                                         {% if a.estatus == 'En proceso' %}
                                             <span class="estatus-badge estatus-en-proceso">⏳ En proceso</span>
                                         {% elif a.estatus == 'Terminado' %}
