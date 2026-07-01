@@ -16,6 +16,43 @@ DATABASE = "pec_comunidad.db"
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
+    
+    # ASEGURAR QUE LA TABLA DE USUARIOS EXISTA EN PRODUCCIÓN
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS usuario (
+            id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL,
+            rol TEXT NOT NULL
+        )
+    ''')
+    conn.commit()
+    
+    # VERIFICAR SI YA HAY USUARIOS CREADOS
+    usuarios_base = conn.execute("SELECT COUNT(*) as total FROM usuario").fetchone()
+    if usuarios_base['total'] == 0:
+        # LISTA CON TUS DATOS REALES DIRECTO AL SERVIDOR
+        usuarios = [
+            ('admin_pec', 'control2026', 'admin'),
+            ('marely', 'marely123', 'alumno'),
+            ('estefania', 'estefania123', 'alumno'),
+            ('jorge', 'jorge123', 'alumno'),
+            ('abigail', 'abigail123', 'alumno'),
+            ('alexa', 'alexa123', 'alumno'),
+            ('eduardo', 'eduardo123', 'alumno'),
+            ('oralia_portillo', 'profe1', 'docente'),
+            ('jos_luis', 'profe2', 'docente'),
+            ('edith_b', 'profe3', 'docente'),
+            ('beatriz_t', 'profe4', 'docente'),
+            ('victor_j', 'profe5', 'docente'),
+            ('rosa_c', 'profe6', 'docente')
+        ]
+        conn.executemany("""
+            INSERT OR IGNORE INTO usuario (username, password, rol) 
+            VALUES (?, ?, ?)
+        """, usuarios)
+        conn.commit()
+        
     return conn
 
 # ==========================================
@@ -340,7 +377,7 @@ def eliminar_evidencia(id):
     return redirect(url_for("dashboard"))
 
 # ==========================================
-# RUTA INTEGRADA PARA ARCHIVOS (SOLO FOTOS/IMÁGENES DIRECTAS)
+# RUTA INTEGRADA PARA ARCHIVOS (SOLO FOTOS)
 # ==========================================
 @app.route('/ver-evidencia/<filename>')
 def ver_archivo_evidencia(filename):
